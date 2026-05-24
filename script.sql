@@ -1,4 +1,53 @@
 ---------------------------------------------------------------
+---------------------------- EXERCÍCIOS
+---------------------------------------------------------------
+
+-- 1.1 Adicione uma coluna à tabela tb_pessoa chamada ativo. Ela indica se a pessoa está
+-- ativa no sistema ou não. Ela deve ser capaz de armazenar um valor booleano. Por padrão,
+-- toda pessoa cadastrada no sistema está ativa.
+-- ALTER TABLE tb_pessoa 
+-- ADD COLUMN IF NOT EXISTS ativo BOOLEAN DEFAULT TRUE;
+
+-- -- teste
+-- SELECT * FROM tb_pessoa;
+
+-- -- 1.2 Associe um trigger de DELETE à tabela. Quando um DELETE for executado, o trigger
+-- -- deve atribuir FALSE à coluna ativo das linhas envolvidas. Além disso, o trigger não deve
+-- -- permitir que nenhuma pessoa seja removida.
+
+-- -- função
+-- CREATE OR REPLACE FUNCTION fn_bloquear_delete_pessoa() RETURNS TRIGGER
+-- LANGUAGE plpgsql
+-- AS $$
+-- BEGIN
+	
+-- 	RAISE NOTICE 'Pessoa a ser removida: %', OLD.cod_pessoa;
+	
+-- 	UPDATE tb_pessoa 
+-- 	SET ativo = FALSE
+-- 	WHERE cod_pessoa = OLD.cod_pessoa;
+	
+-- 	RAISE NOTICE 'Remoção registro não permitida';
+	
+-- 	RETURN NULL;
+
+-- END;
+-- $$
+
+-- -- trigger tg_bloquear_delete_pessoa
+-- DROP TRIGGER IF EXISTS tg_bloquear_delete_pessoa ON tb_pessoa;
+-- CREATE TRIGGER tg_bloquear_delete_pessoa
+-- BEFORE DELETE ON tb_pessoa
+-- FOR EACH ROW
+-- EXECUTE FUNCTION fn_bloquear_delete_pessoa();
+
+-- testes
+SELECT * FROM tb_pessoa;
+
+DELETE FROM tb_pessoa
+WHERE cod_pessoa = 1;
+
+---------------------------------------------------------------
 ----------------------------- TRIGGERS
 ---------------------------------------------------------------
 -- Bloco de Código 2.4.1
